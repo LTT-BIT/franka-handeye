@@ -1,0 +1,15 @@
+{
+  "base_frame": "right_base",
+  "tool_frame": "right_tool0",
+  "color_topic": "/cam0/color/image_raw",
+  "camera_info_topic": "/cam0/color/camera_info",
+  "board": {
+    "dictionary": "DICT_4X4_250",
+    "columns": 3,
+    "rows": 3,
+    "ids_row_major": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    "marker_length_m": 0.035,
+    "marker_separation_m": 0.006,
+    "minimum_visible_markers": 5
+  }
+}

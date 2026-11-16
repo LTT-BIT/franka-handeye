@@ -1,0 +1,5 @@
+# ROS camera input additionally requires the Python matching your ROS distro.
+# Prefer distro python3-opencv/python3-numpy/python3-scipy beside cv_bridge.
+numpy>=1.24
+scipy>=1.10
+opencv-contrib-python>=4.6

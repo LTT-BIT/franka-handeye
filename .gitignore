@@ -1,0 +1,12 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+runs/
+native/build*/
+.venv*/
+.env
+.env.*
+!.env.example
+/grasp/config/*_calibration/
+/docs/browser_preview*.png
+/docs/minimum_10_preview.png

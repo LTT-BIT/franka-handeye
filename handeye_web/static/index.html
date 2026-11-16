@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Franka · 手眼标定工作台</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><div class="brand"><span class="brand-mark">⌖</span><div><strong>FRANKA <span>CALIBRATION</span></strong><small>手眼标定工作台 / 固定头部相机</small></div></div><div class="header-right"><span class="pill">硬件只读</span><span id="connectionBadge" class="pill muted">未连接</span></div></header>
+<main>
+<section class="intro"><div><div class="eyebrow">FR3 + SHARPA · EYE TO HAND</div><h1>手动示教，精确对齐。</h1><p>拖动机械臂调整姿态，松手停稳后采集。相机与基座固定，标定板相对末端保持不变。</p></div><div class="step-count"><b id="countHero">00</b><span>已保存姿态 <em>/ 最少 10 组 · 建议 25–30 组</em></span></div></section>
+<nav class="workflow"><span class="active">01 <b>连接与检查</b></span><span>02 <b>手动示教采样</b></span><span>03 <b>求解与留出检查</b></span><span>04 <b>独立验证</b></span></nav>
+<div class="workspace">
+<aside class="panel setup"><div class="panel-title"><h2>采集会话</h2><span class="tiny">SESSION</span></div>
+<label>机械臂侧别<select id="side"><option value="left">左臂 · 172.16.26.5</option><option value="right">右臂 · 172.16.26.4</option></select></label>
+<label>相机话题组<select id="profile"><option value="camera">头部相机 /camera</option><option value="cam0">三相机采集 /cam0</option></select></label>
+<label>末端位姿读取<select id="poseSource"><option value="libfranka">libfranka 只读 · 手动示教</option><option value="tf">已有 ROS TF · 只读订阅</option></select></label>
+<div class="hardware"><div class="hardware-icon">◉</div><div><b>Orbbec Gemini 435Le</b><small>192.168.1.123:8090</small><small>参考 SN · CP4N651006F</small><small>需核对驱动日志中的实际序列号</small></div></div>
+<div class="board-card"><span class="tiny">CHARUCO BOARD</span><b>14 × 9 格</b><p>方格 20 mm / 标记 15 mm<br>DICT_5X5_250 · Legacy pattern</p></div>
+<details><summary>ROS 坐标系与板参数</summary><p class="hint">默认采用 FR3 基座 → 末端法兰 link8。参数修改在新会话中生效。</p><textarea id="config" rows="15" aria-label="标定配置 JSON" spellcheck="false"></textarea></details>
+<button id="new" class="button primary full">＋ 新建标定会话</button>
+<div class="connection-actions"><button id="connect" class="button">连接预览</button><button id="disconnect" class="button subtle">断开</button></div>
+<div class="divider"></div><label>历史会话<select id="sessions"><option value="">选择已保存的会话…</option></select></label><button id="resume" class="button subtle full">打开历史会话</button>
+<div class="session-meta"><span id="sessionId">尚未创建会话</span><small id="domain">ROS DOMAIN · 0</small></div>
+</aside>
+<section class="main-column">
+<div class="panel camera-panel"><div class="panel-title"><h2><span id="liveDot" class="dot"></span>头部相机预览</h2><span id="frameName" class="tiny">RGB / OPTICAL FRAME</span></div>
+<div class="camera-view"><img id="preview" src="/api/frame" alt="相机标定预览"><div id="empty" class="empty-camera"><span>⌖</span><h3>等待相机画面</h3><p>创建会话并连接，检查 ChArUco 角点与坐标轴</p></div><span id="cameraStatus" class="camera-tag">硬件只读 · 未连接</span></div>
+<div class="metrics"><div><small>标定板检测</small><strong id="markers">—</strong></div><div><small>重投影 RMSE</small><strong id="reprojection">— <em>px</em></strong></div><div><small>末端稳定性</small><strong id="stability">等待观测</strong></div></div>
+<div class="capture-bar"><div><span id="readyDot" class="dot"></span><b id="readyReason">先创建采集会话</b><small id="detectorStatus">图像与图像时刻的 TF 将自动配对</small></div><button id="capture" class="button primary" disabled>⊕ 采集当前姿态</button></div></div>
+<div class="panel samples-panel"><div class="panel-title"><h2>姿态记录 <span id="sampleCount" class="count-chip">0</span></h2><a href="/api/samples" id="downloadSamples" download="samples.json">下载样本 JSON ↗</a></div><div class="table-scroll"><table><thead><tr><th>样本</th><th>末端位置 X / Y / Z（m）</th><th>重投影（px）</th><th>状态</th></tr></thead><tbody id="sampleRows"><tr><td colspan="4" class="empty-table">尚未采样 · 每个姿态将即时保存到磁盘</td></tr></tbody></table></div></div>
+</section>
+<aside class="right-column"><div class="panel guide"><div class="panel-title"><h2>示教采集流程</h2><span>↗</span></div><ol><li><b>固定标定板</b><p>板与 FR3 link8 保持刚性连接。若由 Sharpa 夹持，整段采集期间保持抓握不变。</p></li><li><b>手动拖动机械臂</b><p>使用 Franka 示教模式调整姿态；本程序只读，不发送运动命令。</p></li><li><b>松手，停稳，再采集</b><p>等待至少 1 秒。绕至少两个不同轴变化约 20–40°，覆盖不同位置与距离。</p></li></ol><div class="note">默认直接读取 Franka 实测状态。松开示教按钮、进入 idle 并停稳后采样；相机继续使用现有 ROS 驱动。</div></div>
+<div class="panel result-panel"><div class="panel-title"><h2>标定质量</h2><span class="tiny">QUALITY</span></div><p class="hint">至少 10 组姿态才可求解；每第 5 组留出检查，最后全量拟合。</p><button id="solve" class="button full" disabled>求解标定</button><div id="resultEmpty" class="result-empty">等待足够的有效姿态</div><div id="result" hidden></div><button id="newValidation" class="button full" disabled>新建独立验证会话</button><button id="validate" class="button full" hidden disabled>检验新姿态（不重拟合）</button><a class="export" id="downloadResult" href="/api/download" download="calibration.json" hidden>↓ 下载结果 JSON</a><div class="thresholds"><span>平移 RMSE / 最大 <b>≤ 10 mm</b></span><span>旋转 RMSE / 最大 <b>≤ 2° / 5°</b></span></div></div>
+<div class="panel storage"><span class="tiny">LOCAL STORAGE</span><p id="output">runs/franka_handeye/</p><small>标定与验证会话分别保存<br>不会自动写入机器人部署配置</small></div>
+</aside></div>
+<footer><span>Franka FR3 · Link0 → Link8 · Camera optical frame</span><span>单位：米 / 角度 · 本地浏览器工作台</span></footer>
+</main><div id="toast" role="status" aria-live="polite"></div><script src="/app.js"></script></body></html>

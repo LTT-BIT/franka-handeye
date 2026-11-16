@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(handeye_franka_readonly LANGUAGES CXX)
+find_package(Franka REQUIRED)
+add_executable(franka_state_reader franka_state_reader.cpp)
+target_compile_features(franka_state_reader PRIVATE cxx_std_17)
+target_compile_options(franka_state_reader PRIVATE -Wall -Wextra -Wpedantic)
+target_link_libraries(franka_state_reader PRIVATE Franka::Franka)

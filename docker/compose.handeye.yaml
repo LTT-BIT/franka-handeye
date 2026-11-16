@@ -1,0 +1,21 @@
+# Merge AFTER the deployed teleop docker/compose.yaml. Only `tools` is overridden.
+# Run with: docker compose -f compose.yaml -f "$HANDEYE_DIR/docker/compose.handeye.yaml" run --rm --no-deps tools
+services:
+  tools:
+    image: franka-handeye:local
+    user: "${HANDEYE_UID:?Export HANDEYE_UID}:${HANDEYE_GID:?Export HANDEYE_GID}"
+    working_dir: /workspace/handeye
+    entrypoint: /bin/bash
+    command:
+      - -lc
+      - >-
+        source /opt/ros/humble/setup.bash &&
+        cmake -S native -B native/build-docker &&
+        cmake --build native/build-docker -j2 &&
+        exec ./start_franka_handeye.sh
+    environment:
+      - TELEOP_REPO=/workspace/franka_upper_body_teleop
+      - HANDEYE_PYTHON=/opt/handeye-venv/bin/python
+      - HANDEYE_FRANKA_READER=/workspace/handeye/native/build-docker/franka_state_reader
+    volumes:
+      - "${HANDEYE_DIR:?Export absolute HANDEYE_DIR}:/workspace/handeye"
