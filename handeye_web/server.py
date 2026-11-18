@@ -65,6 +65,7 @@ class App:
             ready, reason = s.readiness() if s else (False, "先创建采集会话")
             row = s.row if s else None
             return {"connected": self.connected, "error": self.last_error,
+                    "has_frame": s is not None and s.canvas is not None,
                     "hardware_read_only": True,
                     "ros_domain_id": os.environ.get("ROS_DOMAIN_ID", "0"),
                     "sessions": self.sessions(), "defaults": default_config(),

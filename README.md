@@ -10,6 +10,21 @@
 
 公开仓库包含源码、参考配置、离线测试和部署文档；不包含采样数据、历史标定结果、日志、虚拟环境、编译产物或本机环境文件。真实使用前需按现场硬件核对地址、相机身份和坐标系。
 
+### 本机快捷启动
+
+本机已构建 `franka-handeye:local` 标定镜像，可直接执行：
+
+```bash
+cd /home/descfly/LTT/franka-handeye
+./start_local_handeye.sh
+```
+
+在本机浏览器打开 [http://127.0.0.1:8766](http://127.0.0.1:8766)。本机 8765 已用于数据处理控制台，因此快捷脚本默认使用 8766。
+脚本默认复用 `/home/descfly/ZH/gello_upper_body_teleop` 的 Compose／ROS 配置；其他机器可通过 `TELEOP_REPO` 覆盖路径，通过 `HANDEYE_PORT` 覆盖端口。
+镜像需预先按下文构建；快捷脚本会编译只读读取器并启动网页服务。
+当前三相机部署的头部相机在界面选择 `/cam0`；选择标定臂和“libfranka 只读 · 手动示教”，新建会话后再连接预览。
+终端按 Ctrl+C 停止服务。数据保存在本项目的 `runs/franka_handeye/`。
+
 ## 1. 已适配的硬件与坐标链
 
 核对来源：用户提供的 [Franka/GELLO/Sharpa 工程](https://github.com/ma39nong/Franka_Gello_Sharpa_armhand_-_-)。

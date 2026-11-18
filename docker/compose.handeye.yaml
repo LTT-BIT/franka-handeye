@@ -14,6 +14,7 @@ services:
         cmake --build native/build-docker -j2 &&
         exec ./start_franka_handeye.sh
     environment:
+      - HOME=/tmp
       - TELEOP_REPO=/workspace/franka_upper_body_teleop
       - HANDEYE_PYTHON=/opt/handeye-venv/bin/python
       - HANDEYE_FRANKA_READER=/workspace/handeye/native/build-docker/franka_state_reader
